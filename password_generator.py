@@ -14,7 +14,7 @@ def get_valid_length():
     while (n<=0) or (n>128):
         if n<0 :
             n = int(input("Error, Invalid length. Please enter a valid length :"))
-        if n>128 :
+        else n>128 :
             n = int(input("Character limit : 128. Please enter a valid length :"))
     return n
 
