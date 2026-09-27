@@ -9,13 +9,21 @@ def generate(n):
 
 
 def get_valid_length():
-    n = int(input("Please enter desired length : "))
+    while True :
+        n = input("Please enter desired length : ")
+        try:
+            n = int(n)
+            while (n<=0) or (n>128):
+                if n<=0 :
+                    n = int(input("Error, Invalid length. Please enter a valid length :"))
+                else  :
+                    n = int(input("Character limit : 128. Please enter a valid length :"))
 
-    while (n<=0) or (n>128):
-        if n<0 :
-            n = int(input("Error, Invalid length. Please enter a valid length :"))
-        else  :
-            n = int(input("Character limit : 128. Please enter a valid length :"))
-    return n
+            return n
+        
+        except ValueError:
+            print("That was not a number.")
+        
+    
 
 generate(get_valid_length())
