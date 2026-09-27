@@ -6,13 +6,16 @@ def generate(n):
     for i in range(n):
         password += secrets.choice(string.ascii_lowercase)
     print("Generated password :" , password)
-    return
+
+
 def get_valid_length():
     n = int(input("Please enter desired length : "))
 
-    while n<=0 :
-        n = int(input("Error, Invalid length. Please enter a valid length :"))
-        
+    while (n<=0) or (n>128):
+        if n<0 :
+            n = int(input("Error, Invalid length. Please enter a valid length :"))
+        if n>128 :
+            n = int(input("Character limit : 128. Please enter a valid length :"))
     return n
 
 generate(get_valid_length())
