@@ -22,12 +22,10 @@ def generate(n,low,up,num,sym):
         password+= secrets.choice(string.punctuation)
         characters+= string.punctuation
         count+=1
-    if n<count:
-        print("Error. Too many types for desired password length.")
-        return
+         
     for i in range(n-count):
         password += secrets.choice(characters)
-    print("Generated password :" , password)
+    return password
 
 
 def get_valid_length():
@@ -59,9 +57,9 @@ def get_character_types () :
         allowed_choices = ["low","up","num","sym"]
 
 
-        for type in choices :
-            type = type.strip()
-            clean_choices.append(type)
+        for character_type in choices :
+            character_type = character_type.strip()
+            clean_choices.append(character_type)
 
         for i in clean_choices :
             if i not in allowed_choices :
@@ -85,9 +83,30 @@ def get_character_types () :
         elif type == "sym":
             sym = True
     return low,up,num,sym
-    
 
-length = get_valid_length()
-low,up,num,sym = get_character_types()
-generate(length,low,up,num,sym)
+def fisher_yates_shuffle(password):
+    password_list = list(password)
+    length = len(password_list)-1
+    for i in range(length,0,-1):
+        j = secrets.choice(range(0,i+1))
+        password_list[j],password_list[i]=password_list[i],password_list[j]
+    shuffled_password = "".join(password_list)
+    return shuffled_password
+
+    
+def main() :
+    invalid = True
+    while invalid :
+        invalid = False
+        length = get_valid_length()
+        low,up,num,sym = get_character_types()
+        if length>= low+up+num+sym :
+            unshuffled_password=generate(length,low,up,num,sym)
+            print(fisher_yates_shuffle(unshuffled_password))
+        else:
+            invalid = True
+            print("Error. Too many types for desired password length.")
+
+main()
+
 
