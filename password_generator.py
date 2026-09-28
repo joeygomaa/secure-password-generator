@@ -1,29 +1,22 @@
-print("Password Generator")
 import secrets
 import string
 
+CHARACTER_TYPES = {
+    "low": string.ascii_lowercase,
+    "up" : string.ascii_uppercase,
+    "num" : string.digits,
+    "sym" : string.punctuation
+}
 def generate(n,selection):
     password = ""
     characters = ""
     
-    for character_type in selection:
+    
 
-        if character_type == "low":
-            password+= secrets.choice(string.ascii_lowercase)
-            characters+= string.ascii_lowercase
-            
-        elif character_type == "up": 
-            password+= secrets.choice(string.ascii_uppercase)
-            characters+= string.ascii_uppercase
-            
-        elif character_type == "num":
-            password+= secrets.choice(string.digits)
-            characters+= string.digits
+    for c_type in selection:
+        password+=secrets.choice(CHARACTER_TYPES[c_type])
+        characters+= CHARACTER_TYPES[c_type]
 
-        elif character_type == "sym":
-            password+= secrets.choice(string.punctuation)
-            characters+= string.punctuation
-         
     for i in range(n-len(selection)):
         password += secrets.choice(characters)
     return password
@@ -55,7 +48,7 @@ def get_character_types () :
         choices = choices.split(",")
 
         clean_choices = set()
-        allowed_choices = {"low","up","num","sym"}
+        allowed_choices = set(CHARACTER_TYPES)
 
 
         for character_type in choices :
@@ -81,6 +74,7 @@ def fisher_yates_shuffle(password):
 
     
 def main() :
+    print("Password Generator")
     invalid = True
     while invalid :
         invalid = False
@@ -93,7 +87,7 @@ def main() :
             invalid = True
             print("Error. Too many types for desired password length.")
 
-
-main()
+if __name__ == "__main__" :
+    main()
 
 
