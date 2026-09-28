@@ -2,9 +2,30 @@ print("Password Generator")
 import secrets
 import string
 
-def generate(n,characters):
+def generate(n,low,up,num,sym):
     password = ""
-    for i in range(n):
+    characters = ""
+    count = 0
+    if low:
+        password+= secrets.choice(string.ascii_lowercase)
+        characters+= string.ascii_lowercase
+        count+=1
+    if up: 
+        password+= secrets.choice(string.ascii_uppercase)
+        characters+= string.ascii_uppercase
+        count+=1
+    if num:
+        password+= secrets.choice(string.digits)
+        characters+= string.digits
+        count+=1
+    if sym:
+        password+= secrets.choice(string.punctuation)
+        characters+= string.punctuation
+        count+=1
+    if n<count:
+        print("Error. Too many types for desired password length.")
+        return
+    for i in range(n-count):
         password += secrets.choice(characters)
     print("Generated password :" , password)
 
@@ -66,21 +87,7 @@ def get_character_types () :
     return low,up,num,sym
     
 
-def build_character_pool():
-    low,up,num,sym = get_character_types()
-    characters = ""
-
-    if low:
-        characters+= string.ascii_lowercase
-    if up :
-        characters+= string.ascii_uppercase
-    if num:
-        characters+= string.digits
-    if sym:
-        characters+= string.punctuation
-    return characters
-
 length = get_valid_length()
-characters = build_character_pool()
-generate(length,characters)
+low,up,num,sym = get_character_types()
+generate(length,low,up,num,sym)
 
