@@ -2,28 +2,29 @@ print("Password Generator")
 import secrets
 import string
 
-def generate(n,low,up,num,sym):
+def generate(n,selection):
     password = ""
     characters = ""
-    count = 0
-    if low:
-        password+= secrets.choice(string.ascii_lowercase)
-        characters+= string.ascii_lowercase
-        count+=1
-    if up: 
-        password+= secrets.choice(string.ascii_uppercase)
-        characters+= string.ascii_uppercase
-        count+=1
-    if num:
-        password+= secrets.choice(string.digits)
-        characters+= string.digits
-        count+=1
-    if sym:
-        password+= secrets.choice(string.punctuation)
-        characters+= string.punctuation
-        count+=1
+    
+    for character_type in selection:
+
+        if character_type == "low":
+            password+= secrets.choice(string.ascii_lowercase)
+            characters+= string.ascii_lowercase
+            
+        elif character_type == "up": 
+            password+= secrets.choice(string.ascii_uppercase)
+            characters+= string.ascii_uppercase
+            
+        elif character_type == "num":
+            password+= secrets.choice(string.digits)
+            characters+= string.digits
+
+        elif character_type == "sym":
+            password+= secrets.choice(string.punctuation)
+            characters+= string.punctuation
          
-    for i in range(n-count):
+    for i in range(n-len(selection)):
         password += secrets.choice(characters)
     return password
 
@@ -66,23 +67,8 @@ def get_character_types () :
                 prompt = "Invalid type " + i + " detected. Please try again : "
                 invalid = True 
                 break
-
-        
-    low = False
-    up = False 
-    num = False
-    sym = False 
-
-    for type in clean_choices :
-        if type == "low":
-            low = True 
-        elif type == "up" :
-            up = True
-        elif type == "num" :
-            num = True
-        elif type == "sym":
-            sym = True
-    return low,up,num,sym
+            
+    return clean_choices
 
 def fisher_yates_shuffle(password):
     password_list = list(password)
@@ -99,9 +85,9 @@ def main() :
     while invalid :
         invalid = False
         length = get_valid_length()
-        low,up,num,sym = get_character_types()
-        if length>= low+up+num+sym :
-            unshuffled_password=generate(length,low,up,num,sym)
+        selection = get_character_types()
+        if length>= len(selection) :
+            unshuffled_password=generate(length,selection)
             print(fisher_yates_shuffle(unshuffled_password))
         else:
             invalid = True
