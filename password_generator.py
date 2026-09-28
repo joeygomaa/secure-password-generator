@@ -39,8 +39,9 @@ def get_valid_length():
             prompt = "That was not an integer. Try again :"
             continue
 
-def get_character_types () :
-    prompt = "Please enter the types of characters, that the password should contain (low,up,num,sym) separated by comma :"
+def get_character_types (prompt = None) :
+    if prompt is None:
+        prompt = "Please enter the types of characters, that the password should contain (low,up,num,sym) separated by comma :"
     invalid = True
     while invalid :
         invalid = False 
@@ -75,17 +76,17 @@ def fisher_yates_shuffle(password):
     
 def main() :
     print("Password Generator")
-    invalid = True
-    while invalid :
-        invalid = False
-        length = get_valid_length()
-        selection = get_character_types()
-        if length>= len(selection) :
-            unshuffled_password=generate(length,selection)
-            print(fisher_yates_shuffle(unshuffled_password))
-        else:
-            invalid = True
-            print("Error. Too many types for desired password length.")
+    
+        
+    length = get_valid_length()
+    selection = get_character_types()
+
+    while length < len(selection):
+        selection = get_character_types("Error. Too many types for desired password length. Please try again :")
+     
+    unshuffled_password=generate(length,selection)
+    print(fisher_yates_shuffle(unshuffled_password))
+    
 
 if __name__ == "__main__" :
     main()
