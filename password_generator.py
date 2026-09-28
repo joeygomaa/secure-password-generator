@@ -54,23 +54,21 @@ def get_character_types () :
         choices = input(prompt)
         choices = choices.split(",")
 
-        clean_choices = []
-        allowed_choices = ["low","up","num","sym"]
+        clean_choices = set()
+        allowed_choices = {"low","up","num","sym"}
 
 
         for character_type in choices :
             character_type = character_type.strip()
-            clean_choices.append(character_type)
+            clean_choices.add(character_type)
 
-        for i in clean_choices :
-            if i not in allowed_choices :
-                prompt = "Invalid type " + i + " detected. Please try again : "
-                invalid = True 
-                break
-        
-        choice_set = set(clean_choices)    
+        invalid_choices = clean_choices - allowed_choices
+        if invalid_choices :
+            invalid = True 
+            print( "Invalid Character type(s) " ,invalid_choices, "detected.") 
+            prompt = "Please enter valid character type(s) (low,up,num,sym) : "
                     
-    return choice_set
+    return clean_choices
 
 def fisher_yates_shuffle(password):
     password_list = list(password)
