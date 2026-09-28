@@ -67,8 +67,10 @@ def get_character_types () :
                 prompt = "Invalid type " + i + " detected. Please try again : "
                 invalid = True 
                 break
-            
-    return clean_choices
+        
+        choice_set = set(clean_choices)    
+                    
+    return choice_set
 
 def fisher_yates_shuffle(password):
     password_list = list(password)
@@ -92,6 +94,7 @@ def main() :
         else:
             invalid = True
             print("Error. Too many types for desired password length.")
+
 
 main()
 
