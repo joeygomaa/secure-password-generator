@@ -1,6 +1,6 @@
 import secrets
 import string
-
+import re
 CHARACTER_TYPES = {
     "low": string.ascii_lowercase,
     "up" : string.ascii_uppercase,
@@ -23,46 +23,41 @@ def generate(n,selection):
 
 
 def get_valid_length():
-    prompt =  "Please enter desired length : "
+    prompt =  "Enter a number between 1 and 128 : "
     while True :
         n = input(prompt)
         try:
             n = int(n)
-            if n <= 0 :
-                prompt = "Error.Invalid number.Please enter a valid number :"
-            elif n>128 :
-                prompt = "Character limit : 128. Please enter a smaller number :"
+            if (n <= 0 or n>128):
+                prompt = "Invalid length. Enter a number between 1 and 128 :"
             else:
                 return n
             
         except ValueError:
-            prompt = "That was not an integer. Try again :"
-            continue
+            prompt = "Invalid length. Enter a number between 1 and 128 :"
+            
 
 def get_character_types (prompt = None) :
     if prompt is None:
-        prompt = "Please enter the types of characters, that the password should contain (low,up,num,sym) separated by comma :"
+        prompt = "Enter desired character type(s) (low,up,num,sym) :"
     invalid = True
     while invalid :
         invalid = False 
         choices = input(prompt)
-        choices = choices.split(",")
-
-        clean_choices = set()
+        choices = re.split(r"\W+",choices)
+        choices = set(choices)
+        choices.discard("")
+        print(choices)
+        
         allowed_choices = set(CHARACTER_TYPES)
 
-
-        for character_type in choices :
-            character_type = character_type.strip()
-            clean_choices.add(character_type)
-
-        invalid_choices = clean_choices - allowed_choices
+        invalid_choices = choices - allowed_choices
         if invalid_choices :
-            invalid = True 
+            invalid = True   #outer while loop unecessary. 
             print( "Invalid Character type(s) " ,invalid_choices, "detected.") 
-            prompt = "Please enter valid character type(s) (low,up,num,sym) : "
+            prompt = "Enter valid character type(s) (low,up,num,sym) : "
                     
-    return clean_choices
+    return choices
 
 def fisher_yates_shuffle(password):
     password_list = list(password)
@@ -82,10 +77,11 @@ def main() :
     selection = get_character_types()
 
     while length < len(selection):
-        selection = get_character_types("Error. Too many types for desired password length. Please try again :")
+        prompt = "Too many character types for a password of length " + str(length) + ". Try again :"
+        selection = get_character_types(prompt)
      
     unshuffled_password=generate(length,selection)
-    print(fisher_yates_shuffle(unshuffled_password))
+    print("Generated Password : " , fisher_yates_shuffle(unshuffled_password))
     
 
 if __name__ == "__main__" :
