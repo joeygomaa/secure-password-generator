@@ -2,24 +2,44 @@ import secrets
 import string
 import re
 import math
+from itertools import combinations
+
 CHARACTER_TYPES = {
     "low": string.ascii_lowercase,
     "up" : string.ascii_uppercase,
     "num" : string.digits,
     "sym" : string.punctuation
 }
+
+
 def generate(n,selection):
-    password = ""
-    characters = ""
     
-    
+    invalid = True
 
-    for c_type in selection:
-        password+=secrets.choice(CHARACTER_TYPES[c_type])
-        characters+= CHARACTER_TYPES[c_type]
+    while invalid :
 
-    for i in range(n-len(selection)):
-        password += secrets.choice(characters)
+        characters = ""
+        password = ""
+        invalid = False
+        
+        for c_type in selection:
+            characters+= CHARACTER_TYPES[c_type]
+
+        for _ in range(n):
+            password += secrets.choice(characters)
+
+        for choice in selection :
+            found = False
+
+            for character in CHARACTER_TYPES[choice] :
+                if character in password :
+                    found = True
+                    break
+
+            if not found :
+                invalid = True 
+                break
+            
     return password
 
 
@@ -53,21 +73,13 @@ def get_character_types (prompt = None) :
         allowed_choices = set(CHARACTER_TYPES)
 
         invalid_choices = choices - allowed_choices
-        if invalid_choices :
+        if invalid_choices or not choices:
             invalid = True   #outer while loop unecessary. 
             print( "Invalid Character type(s) " ,invalid_choices, "detected.") 
             prompt = "Enter valid character type(s) (low,up,num,sym) : "
                     
     return choices
 
-def fisher_yates_shuffle(password):
-    password_list = list(password)
-    length = len(password_list)-1
-    for i in range(length,0,-1):
-        j = secrets.choice(range(0,i+1))
-        password_list[j],password_list[i]=password_list[i],password_list[j]
-    shuffled_password = "".join(password_list)
-    return shuffled_password
 
 def get_password_amount () :
     prompt = "How many passwords would you like? "
@@ -81,6 +93,7 @@ def get_password_amount () :
         except ValueError:
             prompt = "Invalid number. Enter a number between 1 and 100 :"
 
+
 def get_pool_size(selection) :
     pool_size = 0
     for choice in selection :
@@ -88,10 +101,21 @@ def get_pool_size(selection) :
             pool_size += len(CHARACTER_TYPES[choice])
     return pool_size
 
+
 def get_entropy(length,selection):
-    entropy = length* math.log2(get_pool_size(selection))
-    return round(entropy,2)
     
+    valid_password_count = get_pool_size(selection)**length
+
+    for i in range(1,len(selection)+1):
+        for excluded in combinations(selection,i):
+            valid_password_count += (-1)**i * get_pool_size(selection - set(excluded))**length
+
+    entropy = math.log2(valid_password_count)
+
+    return round(entropy,2)
+
+    
+
 def main() :
     print("Password Generator")
     
@@ -99,15 +123,16 @@ def main() :
     length = get_valid_length()
     selection = get_character_types()
     passwords = []
-    entropy = get_entropy(length,selection)
-
+    
     while length < len(selection):
         prompt = f"Too many character types for a password of length {length}. Try again :"
         selection = get_character_types(prompt)
+    
+    entropy = get_entropy(length,selection)
+
 
     for _ in range(amount):
         password = generate(length,selection)
-        password = fisher_yates_shuffle(password)
         passwords.append(password)
         
     print("Generated Password(s) :")
@@ -116,6 +141,7 @@ def main() :
         print(f"{i}. {password}")
     
     print(f"Password entropy : {entropy} bits")
+
 
 if __name__ == "__main__" :
     main()
