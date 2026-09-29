@@ -23,7 +23,7 @@ def generate(n,selection):
 
 
 def get_valid_length():
-    prompt =  "Enter a number between 1 and 128 : "
+    prompt =  "Enter desired length : "
     while True :
         n = input(prompt)
         try:
@@ -47,7 +47,7 @@ def get_character_types (prompt = None) :
         choices = re.split(r"\W+",choices)
         choices = set(choices)
         choices.discard("")
-        print(choices)
+        
         
         allowed_choices = set(CHARACTER_TYPES)
 
@@ -68,21 +68,39 @@ def fisher_yates_shuffle(password):
     shuffled_password = "".join(password_list)
     return shuffled_password
 
+def get_password_amount () :
+    prompt = "How many passwords would you like? "
+    while True :
+        try:
+            n = int(input(prompt))
+            if (n<1 or n>100):
+                prompt = "Invalid number. Enter a number between 1 and 100 : "
+            else:
+                return n
+        except ValueError:
+            prompt = "Invalid number. Enter a number between 1 and 100 :"
+
     
 def main() :
     print("Password Generator")
     
-        
+    amount = get_password_amount()
     length = get_valid_length()
     selection = get_character_types()
+    passwords = []
 
     while length < len(selection):
         prompt = f"Too many character types for a password of length {length}. Try again :"
         selection = get_character_types(prompt)
-     
-    unshuffled_password=generate(length,selection)
-    print(f"Generated Password : {fisher_yates_shuffle(unshuffled_password)}")
-    
+
+    for _ in range(amount):
+        password = generate(length,selection)
+        password = fisher_yates_shuffle(password)
+        passwords.append(password)
+        
+    print("Generated Password(s) :")
+    for i ,password in enumerate(passwords,start=1) :
+        print(f"{i}. {password}")
 
 if __name__ == "__main__" :
     main()
