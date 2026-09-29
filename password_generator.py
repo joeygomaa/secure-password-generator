@@ -1,6 +1,7 @@
 import secrets
 import string
 import re
+import math
 CHARACTER_TYPES = {
     "low": string.ascii_lowercase,
     "up" : string.ascii_uppercase,
@@ -80,6 +81,16 @@ def get_password_amount () :
         except ValueError:
             prompt = "Invalid number. Enter a number between 1 and 100 :"
 
+def get_pool_size(selection) :
+    pool_size = 0
+    for choice in selection :
+        if choice in CHARACTER_TYPES :
+            pool_size += len(CHARACTER_TYPES[choice])
+    return pool_size
+
+def get_entropy(length,selection):
+    entropy = length* math.log2(get_pool_size(selection))
+    return round(entropy,2)
     
 def main() :
     print("Password Generator")
@@ -88,6 +99,7 @@ def main() :
     length = get_valid_length()
     selection = get_character_types()
     passwords = []
+    entropy = get_entropy(length,selection)
 
     while length < len(selection):
         prompt = f"Too many character types for a password of length {length}. Try again :"
@@ -99,8 +111,11 @@ def main() :
         passwords.append(password)
         
     print("Generated Password(s) :")
+    
     for i ,password in enumerate(passwords,start=1) :
         print(f"{i}. {password}")
+    
+    print(f"Password entropy : {entropy} bits")
 
 if __name__ == "__main__" :
     main()
