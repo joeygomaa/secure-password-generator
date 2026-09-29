@@ -77,11 +77,11 @@ def main() :
     selection = get_character_types()
 
     while length < len(selection):
-        prompt = "Too many character types for a password of length " + str(length) + ". Try again :"
+        prompt = f"Too many character types for a password of length {length}. Try again :"
         selection = get_character_types(prompt)
      
     unshuffled_password=generate(length,selection)
-    print("Generated Password : " , fisher_yates_shuffle(unshuffled_password))
+    print(f"Generated Password : {fisher_yates_shuffle(unshuffled_password)}")
     
 
 if __name__ == "__main__" :
