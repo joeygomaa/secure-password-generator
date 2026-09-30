@@ -137,9 +137,12 @@ def validate_amount(n):
 
 def validate_selection(selection):
     
-    selection = set(selection)
-    allowed_choices = set(CHARACTER_TYPES)
-    invalid_choices = selection - allowed_choices
+    try:
+        selection = set(selection)
+        allowed_choices = set(CHARACTER_TYPES)
+        invalid_choices = selection - allowed_choices
+    except TypeError :
+        return False
     
     if invalid_choices or not selection:
         return False
