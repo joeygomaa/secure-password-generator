@@ -1,3 +1,4 @@
+import argparse
 import secrets
 import string
 import re
@@ -45,60 +46,49 @@ def generate(n,selection):
 
 def get_valid_length():
     prompt =  "Enter desired length : "
+    
     while True :
         n = input(prompt)
-        try:
-            n = int(n)
-            if (n <= 0 or n>128):
-                prompt = "Invalid length. Enter a number between 1 and 128 :"
-            else:
-                return n
-            
-        except ValueError:
+        
+        if validate_length(n) :
+            return int(n)
+        else:
             prompt = "Invalid length. Enter a number between 1 and 128 :"
-            
+
 
 def get_character_types (prompt = None) :
     if prompt is None:
         prompt = "Enter desired character type(s) (low,up,num,sym) :"
-    invalid = True
-    while invalid :
-        invalid = False 
+    
+    while True :
+        
         choices = input(prompt)
         choices = re.split(r"\W+",choices)
         choices = set(choices)
         choices.discard("")
         
         
-        allowed_choices = set(CHARACTER_TYPES)
+        if validate_selection(choices):
+            return choices
+        else:
+            prompt = "Invalid character type(s) detected. Enter low,up,num or sym :"
 
-        invalid_choices = choices - allowed_choices
-        if invalid_choices or not choices:
-            invalid = True   #outer while loop unecessary. 
-            print( "Invalid Character type(s) " ,invalid_choices, "detected.") 
-            prompt = "Enter valid character type(s) (low,up,num,sym) : "
-                    
-    return choices
-
-
+    
 def get_password_amount () :
     prompt = "How many passwords would you like? "
     while True :
-        try:
-            n = int(input(prompt))
-            if (n<1 or n>100):
-                prompt = "Invalid number. Enter a number between 1 and 100 : "
-            else:
-                return n
-        except ValueError:
+        n = input(prompt)
+        if validate_amount(n):
+            return int(n)
+        else:
             prompt = "Invalid number. Enter a number between 1 and 100 :"
 
 
 def get_pool_size(selection) :
     pool_size = 0
     for choice in selection :
-        if choice in CHARACTER_TYPES :
-            pool_size += len(CHARACTER_TYPES[choice])
+        pool_size += len(CHARACTER_TYPES[choice])
+        
     return pool_size
 
 
@@ -114,14 +104,77 @@ def get_entropy(length,selection):
 
     return round(entropy,2)
 
+
+def get_arguments ():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--length",type=int,choices=range(1,129),)
+    parser.add_argument("--amount",type= int,choices=range(1,101))
+    parser.add_argument("--type",nargs="+",choices=CHARACTER_TYPES)
+    args = parser.parse_args()
+    return args
+
+
+def validate_length (n):
     
+    try :
+        n=int(n)
+        if (n <= 0 or n>128):
+            return False
+    except (ValueError,TypeError):
+        return False 
+    return True
+
+
+def validate_amount(n):
+    try:
+        n = int(n)
+        if(n<1 or n>100):
+            return False 
+    except (ValueError,TypeError):
+        return False 
+    return True 
+
+
+def validate_selection(selection):
+    
+    selection = set(selection)
+    allowed_choices = set(CHARACTER_TYPES)
+    invalid_choices = selection - allowed_choices
+    
+    if invalid_choices or not selection:
+        return False
+    return True 
+
+
+
 
 def main() :
     print("Password Generator")
     
-    amount = get_password_amount()
-    length = get_valid_length()
-    selection = get_character_types()
+    args = get_arguments()
+
+    if args.amount is None :
+        amount = get_password_amount()
+    else:
+        amount = args.amount
+
+
+    if args.length is None :
+        length = get_valid_length()
+    else:
+        length = args.length
+
+
+    if args.type is None :
+        selection = get_character_types()
+    else:
+        selection = set(args.type)
+
+        if (length<len(selection)):
+           print (f"Error. Too many character types for a password of length {length}.")
+           return
+
+
     passwords = []
     
     while length < len(selection):
@@ -141,7 +194,7 @@ def main() :
         print(f"{i}. {password}")
     
     print(f"Password entropy : {entropy} bits")
-
+    
 
 if __name__ == "__main__" :
     main()
