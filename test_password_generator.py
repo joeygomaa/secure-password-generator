@@ -38,20 +38,26 @@ class TestPasswordGenerator(unittest.TestCase):
 
 
     def test_entropy(self):
-        self.assertEqual(password_generator.get_entropy(1,{"low"}),4.70)
-        self.assertEqual(password_generator.get_entropy(1,{"num"}),3.32)
-        self.assertEqual(password_generator.get_entropy(2,{"low","num"}),9.02)
-        self.assertEqual(password_generator.get_entropy(3,{"low","up","sym"}),16.99)
-        self.assertEqual(password_generator.get_entropy(4,{"low","up","num","sym"}),22.31)
-        self.assertEqual(password_generator.get_entropy(12,{"low","up","num","sym"}),78.14)
-        self.assertEqual(password_generator.get_entropy(128,{"low","up","num","sym"}),838.99)
+        self.assertAlmostEqual(password_generator.get_entropy(1,{"low"}),4.70,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(1,{"num"}),3.32,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(2,{"low","num"}),9.02,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(3,{"low","up","sym"}),16.99,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(4,{"low","up","num","sym"}),22.31,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(12,{"low","up","num","sym"}),78.14,places=2)
+        self.assertAlmostEqual(password_generator.get_entropy(128,{"low","up","num","sym"}),838.99,places=2)
 
     def test_valid_password(self):
-        self.assertFalse(password_generator.is_valid_password({"low"},"APC8796234$$"))
-        self.assertFalse(password_generator.is_valid_password({"num"},"uiahsdIUHDSAUSDH!A£"))
-        self.assertFalse(password_generator.is_valid_password({"sym","up"},"/&ç*(&)&ç*)lsdha54sdffs9287"))
-        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"IUASHDIUH234729874"))                                 #test for unwanted character types
-        self.assertFalse(password_generator.is_valid_password({"sym","up","num","low"},"aoisdjad9q83ueqnASD"))
-        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"aoisdjad!(/&/&%ç*9q83ueqnASD"))
-        self.assertTrue(password_generator.is_valid_password({"sym","up","num","low"},"aIUASHDIUH234729874!"))
+        self.assertTrue(password_generator.is_valid_password({"low"}, "abc"))
+        self.assertFalse(password_generator.is_valid_password({"low"}, "abc1"))
+        self.assertTrue(password_generator.is_valid_password({"low", "num"}, "abc123"))
+        self.assertFalse(password_generator.is_valid_password({"low", "num"}, "abcdef"))
+        self.assertFalse(password_generator.is_valid_password({"low", "num"}, "abc123!"))
+        self.assertTrue(password_generator.is_valid_password({"low", "up", "num", "sym"},"aA1!"))
+
+    def test_generate(self):
+        passwords = password_generator.generate_passwords(10, 12, {"low","num","sym"})
+        self.assertTrue(len(passwords) == 10)
+        for password in passwords:
+            self.assertTrue(len(password) == 12)
+            self.assertTrue(password_generator.is_valid_password({"low","num","sym"},password))
     
