@@ -19,24 +19,26 @@ LIMITS = {
 }
 
 
-def generate_password(n, selection): 
+def generate_passwords(amount, length, selection): 
     
     characters = ""
     for c_type in selection:
             characters+= CHARACTER_TYPES[c_type]
     
-    while True :
+    passwords = []
+    
+    while len(passwords) < amount :
         password = ""
 
-        for _ in range(n):
+        for _ in range(length):
             password += secrets.choice(characters)
 
         if is_valid_password(selection, password):
-            return password
+            passwords.append(password)
             
-        
+    return passwords
 
-
+ 
 def get_valid_length():
     prompt =  "Enter desired length : "
     
@@ -192,9 +194,63 @@ def is_valid_password(selection, password) :
     return True
 
 
-def main() :
+def print_results(passwords,entropy):
     print("Password Generator")
-                                                    # yuck 
+    print("Generated Password(s) :")                        
+        
+    for i ,password in enumerate(passwords, start=1) :
+        print(f"{i}. {password}")
+
+    print(f"Password entropy : {entropy} bits")
+
+
+def resolve_inputs(args):
+    length = args.length 
+    selection = set(args.type) if args.type is not None else None
+    
+    if selection is not None and length is not None :
+        if length < len(selection) :
+            print (f"Error. Too many character types for a password of length {length}.")
+            return False 
+    
+    elif selection is None and length is not None :
+        selection = get_character_types()
+        
+        while length < len(selection):
+            prompt = f"Error. Too many character types for a password of length {length}. Select fewer types :" 
+            selection = get_character_types(prompt)
+    elif selection is not None and length is None :
+        length = get_valid_length() 
+
+        while length < len(selection) :
+            prompt = f"Error. Too many character types for a password of length {length}. Enter greater length :"
+            length = get_valid_length(prompt)
+    else :
+        length = get_valid_length()
+        selection = get_character_types()
+
+        while length < len(selection) : 
+            print(f"Error. Too many character types for a password of length {length}.") 
+            print(f"Current length : {length}" )
+            print(f"Current selection : {selection}.")
+            entry = input("Enter greater length or fewer types :")
+
+            try :
+                entry = int(entry)
+                length = entry 
+            except ValueError:
+                selection = re.split(r"\W+",entry) 
+                selection = set(selection)
+                selection.discard("")
+            except TypeError:
+                continue 
+    result = (length,selection)
+    return result
+            
+
+
+def main() :
+    
     args = get_arguments()
 
     if args.amount is None :
@@ -203,41 +259,18 @@ def main() :
         amount = args.amount
 
 
-    if args.length is None :
-        length = get_valid_length()
-    else:
-        length = args.length
+    results = resolve_inputs(args)
+    if results is False:
+        return
 
-
-    if args.type is None :
-        selection = get_character_types()
-    else:
-        selection = set(args.type)
-
-        if length < len(selection):
-           print (f"Error. Too many character types for a password of length {length}.")
-           return
-
-
-    passwords = []
+    length, selection = results
     
-    while length < len(selection):
-        prompt = f"Too many character types for a password of length {length}. Try again :"       # maybe put it into a function
-        selection = get_character_types(prompt)
     
+    passwords = generate_passwords(amount,length,selection)
     entropy = get_entropy(length, selection)
 
-
-    for _ in range(amount):
-        password = generate_password(length, selection)
-        passwords.append(password)
-        
-    print("Generated Password(s) :")                        # maybe a function here 
+    print_results(passwords,entropy)
     
-    for i ,password in enumerate(passwords, start=1) :
-        print(f"{i}. {password}")
-    
-    print(f"Password entropy : {entropy} bits")
     
 
 if __name__ == "__main__" :
