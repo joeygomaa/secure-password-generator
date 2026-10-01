@@ -50,7 +50,8 @@ class TestPasswordGenerator(unittest.TestCase):
         self.assertFalse(password_generator.is_valid_password({"low"},"APC8796234$$"))
         self.assertFalse(password_generator.is_valid_password({"num"},"uiahsdIUHDSAUSDH!A£"))
         self.assertFalse(password_generator.is_valid_password({"sym","up"},"/&ç*(&)&ç*)lsdha54sdffs9287"))
-        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"IUASHDIUH234729874"))
+        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"IUASHDIUH234729874"))                                 #test for unwanted character types
         self.assertFalse(password_generator.is_valid_password({"sym","up","num","low"},"aoisdjad9q83ueqnASD"))
+        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"aoisdjad!(/&/&%ç*9q83ueqnASD"))
         self.assertTrue(password_generator.is_valid_password({"sym","up","num","low"},"aIUASHDIUH234729874!"))
     
