@@ -46,4 +46,11 @@ class TestPasswordGenerator(unittest.TestCase):
         self.assertEqual(password_generator.get_entropy(12,{"low","up","num","sym"}),78.14)
         self.assertEqual(password_generator.get_entropy(128,{"low","up","num","sym"}),838.99)
 
+    def test_valid_password(self):
+        self.assertFalse(password_generator.is_valid_password({"low"},"APC8796234$$"))
+        self.assertFalse(password_generator.is_valid_password({"num"},"uiahsdIUHDSAUSDH!A£"))
+        self.assertFalse(password_generator.is_valid_password({"sym","up"},"/&ç*(&)&ç*)lsdha54sdffs9287"))
+        self.assertFalse(password_generator.is_valid_password({"sym","up","num"},"IUASHDIUH234729874"))
+        self.assertFalse(password_generator.is_valid_password({"sym","up","num","low"},"aoisdjad9q83ueqnASD"))
+        self.assertTrue(password_generator.is_valid_password({"sym","up","num","low"},"aIUASHDIUH234729874!"))
     

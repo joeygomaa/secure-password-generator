@@ -15,33 +15,20 @@ CHARACTER_TYPES = {
 
 def generate(n,selection):
     
-    invalid = True
-
-    while invalid :
-
-        characters = ""
-        password = ""
-        invalid = False
-        
-        for c_type in selection:
+    characters = ""
+    for c_type in selection:
             characters+= CHARACTER_TYPES[c_type]
-
+    
+    while True :
+        password = ""
+        
         for _ in range(n):
             password += secrets.choice(characters)
 
-        for choice in selection :
-            found = False
-
-            for character in CHARACTER_TYPES[choice] :
-                if character in password :
-                    found = True
-                    break
-
-            if not found :
-                invalid = True 
-                break
+        if is_valid_password(selection,password):
+            return password
             
-    return password
+        
 
 
 def get_valid_length():
@@ -149,6 +136,19 @@ def validate_selection(selection):
     return True 
 
 
+def is_valid_password(selection,password) :
+    for choice in selection :
+        found = False
+
+        for character in CHARACTER_TYPES[choice] :
+            if character in password :
+                found = True
+                break
+
+        if not found :
+            return False 
+            
+    return True
 
 
 def main() :
