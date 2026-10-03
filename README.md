@@ -13,6 +13,7 @@ This program generates cryptographically secure passwords using Python's secrets
 - Unit-tested functionality  
 - Tailored error messages
 - Password entropy calculation
+- Graphical User Interface (GUI)
 
 ## Usage 
 ### CLI Usage 
@@ -40,6 +41,14 @@ python password_generator.py
 ```
 The program will prompt for the amount of passwords, length of the passwords and character types. 
 
+### GUI Usage 
+To use the GUI run the program through the terminal :
+
+```bash
+python password_generator_gui.py
+```
+Enter length and amount into the corresponding text fields and check the boxes to select types. Then click "Generate".
+
 ## Security
 Password characters are selected using Python's `secrets` module. The `secrets` module provides cryptographically secure randomness intended for security sensitive applications. The generator uses rejection sampling to guarantee that every character type appears at least once in every generated password. A complete password is generated from the combined character pool and is rejected and regenerated if it does not meet the selected character-type requirements.
 
@@ -57,6 +66,9 @@ python -m unittest -v
 - No external dependencies 
 
 ## Project Structure 
-password_generator.py       # Main application 
-test_password_generator.py  # Unit tests
-README.md                   # Project documentation
+password_generator.py                       # Main application 
+password_generator_gui.py                   #GUI 
+test_password_generator.py                  # Unit tests
+README.md                                   # Project documentation
+
+
